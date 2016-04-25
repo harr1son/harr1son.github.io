@@ -1,0 +1,74 @@
+.container-fluid {
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+}
+
+.background-img {
+    height: 100%;
+    width: 100%;
+}
+
+.helper {
+  position: fixed;
+  display: none;
+  border: 5px solid yellow;
+}
+
+#shelf1 {
+  width: 15%;
+  height: 14%;
+  top: 10%;
+  left: 61%;
+}
+
+#shelf2 {
+  width: 15%;
+  height: 19%;
+  top: 24%;
+  left: 61%;
+}
+
+#shelf3 {
+  width: 15%;
+  height: 15%;
+  top: 42%;
+  left: 61%;
+}
+
+#shelf4 {
+  width: 15%;
+  height: 15%;
+  top: 56%;
+  left: 61%;
+}
+
+#aerosol {
+  position: fixed;
+  width: 4%
+}
+
+#beachTowel {
+  position: fixed;
+  width: 16%
+}
+
+#np1, #np2 {
+  position: fixed;
+  width: 3%
+}
+
+#sillyString {
+  position: fixed;
+  width: 11%
+}
+
+#flame {
+  position: fixed;
+  top: 70%;
+  left: 46%;
+  height: 22%;
+  width: 12%;
+}
