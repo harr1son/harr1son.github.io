@@ -4,6 +4,8 @@ var outletFixed = false;
 var ovenMittOn = false;
 var score = 0;
 var totalScore = 0;
+var paused = false;
+var resumed = false;
 var hashValue= {
   'ashTray': 'Never leave cigarettes unattended or smoke while tired.  Smoke outside the home in a designated area.',
   'brokenSD': 'Working smoke alarms save lives!  Replace the battery at least once a year.  Smoke alarms should be placed in every level of the home and inside and outside of every sleeping room.',
@@ -23,11 +25,11 @@ var hashValue= {
   'toddler': 'When cooking or preparing foods, keep children away from the stove or other areas in the kitchen that may pose a danger.  Encourage them to sit at the table or in sight of the food preparer.',
   'burner': 'Create a “kid safe zone” in front of the stove.  Instruct children not to step inside the zone when the appliance is in use – or – for cooktops with front dials, place a guard over the dials to prevent them from accidently being turned on by little children. ',
   'kitchenAshTray': 'If parents smoke, they should smoke outside of the home in a clearly defined area.  Tell a parent to dampen cigarette butts to ensure that they are extinguished.  Alert an adult if you see a cigarette unattended!',
-  'kitchenLighter': '',
+  'kitchenLighter': 'Keep matches and cigarette lighters out of the reach of Children.  Place them in locked cabinets or high above the counter tops whenever possible.',
   'kitchenCoffee': 'Keep hot liquids  such as coffee at the back of the counter out of the reach of children.  For best results, use a coffee mug with a no-spill lid if possible. ',
   'ramenBox': 'Properly store microwaveable foods in cabinets or on shelves and not on top of  the microwave.',
   'ovenMitt': 'When handling hot pots and pans, use a long (over the wrist) oven mitt to prevent the possibility of a burn.  Be certain to replace the mitt when it becomes worn or thin.',
-  'crockpotCord':'Keep small appliances (crock pots, toasters, etc., at the back of the counter with the cords unplugged and out of reach. ',
+  'crockpotCord':'Keep small appliances (crock pots, toasters, etc.) at the back of the counter with the cords unplugged and out of reach. ',
   'bbqLighter':'Flammable liquids such as lighter fluid should be stored on high shelves in well a ventilated area.',
   'milkJug':'Store gasoline and other flammable in approved,  properly labeled containers.  ',
   'boxes':'All exits need to be kept clear of boxes and other objects that may obstruct egress in the event of an emergency.',
@@ -35,19 +37,29 @@ var hashValue= {
   'gasCan':'Gasoline should be stored at room temperature, away from potential heat sources such as the sun, gas water heaters/furnaces and at least 50 feet from ignition sources such as pilot lights.',
   'hotExhaust':'Make certain there is proper ventilation inside the garage, so that fumes are vented to the outside. Be wary of the hot exhaust outlets on recently used vehicles!',
   'extCord':'All malfunctioning cords, chargers, etc should be discarded.  Never use cords or appliances that are in poor or frayed condition.',
-  'heater':'If you see any leaks, steam, smoke, or other possible problems with a water heater, tell and adult!',
+  'heater':'If you see any leaks, steam, smoke, or other possible problems with a water heater, tell an adult!',
   'mcExhaust':'Make certain there is proper ventilation inside the garage, so that fumes are vented to the outside. Be wary of the hot exhaust outlets on recently used vehicles!',
   'garageBaby':'Never let children play in the garage – it is a dangerous environment!',  
 }
 $(document).ready(function () {
-
-
+  /*
+        localStorage.setItem("lvonedone", 'true');
+        localStorage.setItem("konedone", 'true');
+        localStorage.setItem("gonedone", 'true');
+        localStorage.setItem("lvtwodone", 'true');
+        localStorage.setItem("ktwodone", 'true');
+        localStorage.setItem("gtwodone", 'true');
+*/
+        
+    //retrieving the score from localStorage.
     var livingRoomOneScore = parseInt(localStorage.getItem('lvonescore'));
     var kitchenOneScore = parseInt(localStorage.getItem('konescore'));
     var garageOneScore = parseInt(localStorage.getItem('gonescore'));
     var garageTwoScore = parseInt(localStorage.getItem('gtwoscore'));
     var livingRoomTwoScore = parseInt(localStorage.getItem('lvtwoscore'));
     var kitchenTwoScore = parseInt(localStorage.getItem('ktwoscore'));
+
+    //make sure the number exists to avoid making it a NaN.
     if(livingRoomOneScore != null && livingRoomOneScore != '' && !isNaN(livingRoomOneScore)){
       totalScore+=livingRoomOneScore;
     }
@@ -66,19 +78,37 @@ $(document).ready(function () {
     if(livingRoomTwoScore != null && livingRoomTwoScore != '' && !isNaN(livingRoomTwoScore)){
       totalScore+=livingRoomTwoScore;
     }
+
 $('.hideWin').click(function(e){
     e.stopPropagation();
      $(this).toggle();
    });
+$('#endScreen-text').click(function(e){
+    e.stopPropagation();
+  $('#endScreenDiv').toggle();
+  $('#endScreen-text').toggle();
+});
+
+$('#endScreenDiv').click(function(e){
+  e.stopPropagation();
+  $('#endScreenDiv').toggle();
+  $('#endScreen-text').toggle();
+});
+//show the popover when a hazard is clicked.
 $('#popover').click(function(e){
     e.stopPropagation();
     $('#popover-text').toggle();
      $(this).toggle();
+     paused = false;
+     resumed = true;
    });
+//show the popover text when a hazard is clicked.
 $('#popover-text').click(function(e){
     e.stopPropagation();
     $('#popover').toggle();
      $(this).toggle();
+     paused= false;
+     resumed = true;
    });
   $('.goodClick').click(function(e){
     e.stopPropagation();
@@ -117,6 +147,27 @@ $('#popover-text').click(function(e){
     hazardsFound = 10;
   }else if($('#level').attr('name') == 'menu'){
     $('#totalScore').html('Score: '+totalScore);
+    var lvone = localStorage.getItem('lvonedone');
+    var lvtwo = localStorage.getItem('lvtwodone');
+    var kone = localStorage.getItem('konedone');
+    var ktwo = localStorage.getItem('ktwodone');
+    var gone = localStorage.getItem('gonedone');
+    var gtwo = localStorage.getItem('gtwodone');
+
+    if((lvone === 'true') && (lvtwo === 'true') && (kone === 'true') && (ktwo === 'true') && (gone === 'true') && (gtwo === 'true')){
+      //make sure that we don't show it unless they have just gone through all 6 levels.
+      //alert('here');
+      $('#endScreen-text').html(totalScore);
+      $("#endScreenDiv").css('visibility', 'visible');
+      localStorage.setItem('lvonedone', 'false');
+      localStorage.setItem('lvtwodone', 'false');
+      localStorage.setItem('konedone', 'false');
+      localStorage.setItem('ktwodone', 'false');
+      localStorage.setItem('gonedone', 'false');
+      localStorage.setItem('gtwodone', 'false');
+      //we show the end-game screen
+
+    }
     return;
   }else if($('#level').attr('name') == 'garageone'){
     hazardsFound = 9;
@@ -143,7 +194,9 @@ $('#popover-text').click(function(e){
 //this is for the timer
 function countdown( elementName, minutes, seconds )
 {
-    var element, endTime, hours, mins, msLeft, time;
+    var element, endTime, hours, mins, msLeft, time, pauseTime, resumeTime;
+    var firstPause = true;
+    var checked = false;
     function twoDigits( n )
     {
         return (n <= 9 ? "0" + n : n);
@@ -151,82 +204,110 @@ function countdown( elementName, minutes, seconds )
 
     function updateTimer()
     {
+        if(paused){
+          if(firstPause){
+            pauseTime = (+new Date);
+            firstPause = false;
+          }
+          setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+        }
+        if(resumed){
+          if(firstPause){
+            pauseTime = (+new Date);
+          }
+          resumeTime = (+new Date);
+          var diff = resumeTime - pauseTime;
+          endTime += diff;
+          resumed = false;
+          firstPause = true;
+        }
         msLeft = endTime - (+new Date);
+
         if($(".counter").html() <= 0){
-          checkScore(msLeft);
+          if(!checked){
+            checkScore(msLeft);
+            checked = true;
+          }
           return;
         }
         if ( msLeft < 1000 ) {
+          if(!checked){
             checkScore(msLeft);
-            //alert('game over!');
+            checked = true;
+          }
+            //alert('here');
         } else {
             time = new Date( msLeft );
             hours = time.getUTCHours();
             mins = time.getUTCMinutes();
-            //$("#timer").html(hours ? hours + ':' + twoDigits( mins ) : mins) + ':' + twoDigits( time.getUTCSeconds() );
-            $(".timer").html(mins + ':' + twoDigits(time.getUTCSeconds()));
+            if(!paused){
+              $(".timer").html(mins + ':' + twoDigits(time.getUTCSeconds()));
+            }
            setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
         }
     }
-
-    //element = document.getElementById( elementName );
-    //alert('here: '+element);
     endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
     updateTimer();
 }
 
 
-var checkScore = function(msLeft){
-  if(score <= 0 & msLeft <= 0){
-    alert('Game over.');
+    var checkScore = function(msLeft){
+      if(score <= 0 & msLeft <= 0){
+        //Game over.
+        return;
+      }
+      //alert(score);
+      score = Math.round(Math.pow(score, 1.2));
+      score += Math.round(msLeft/1000);
+      if(score>=390){
+         $("#threeStars").css('visibility', 'visible');
+      }
+      else if(score<390 & score>=200){
+        $("#twoStars").css('visibility', 'visible');
+      }
+      else if(score<200 & score>=60){
+        $("#oneStar").css('visibility', 'visible');
+      }
+      else{
+        $("#noStars").css('visibility', 'visible');
+        //add a no stars image
+      }
 
-    return;
-  }
-  score = Math.round(Math.pow(score, 1.2));
-  score += Math.round(msLeft/1000);
-  if(score>=390){
-     $("#threeStars").css('visibility', 'visible');
-  }
-  else if(score<390 & score>=200){
-    $("#twoStars").css('visibility', 'visible');
-  }
-  else if(score<200 & score>=60){
-    $("#oneStar").css('visibility', 'visible');
-  }
-  else{
-    $("#noStars").css('visibility', 'visible');
-    //add a no stars image
-  }
-  $("#levelScore").css('visibility', 'visible');
-  $("#levelScore").html('Score: '+score);
-  if($('#level').attr('name')=='livingroomone'){
-    localStorage.setItem("lvonescore", score);
-  }else if($('#level').attr('name') == 'kitchenone'){
-    localStorage.setItem("konescore", score);
-  }else if($('#level').attr('name') == 'garageone'){
-    localStorage.setItem("gonescore", score);
-  }else if($('#level').attr('name') == 'livingdraggable'){
-    localStorage.setItem('lvtwoscore', score);
-  }else if($('#level').attr('name') == 'kitchendraggable'){
-    localStorage.setItem('ktwoscore', score);
-  }else if($('#level').attr('name') == 'garagedraggable'){
-    localStorage.setItem('gtwoscore', score);
-  }
+      $("#levelScore").css('visibility', 'visible');
+      $("#levelScore").html('Score: '+score);
+      if($('#level').attr('name')=='livingroomone'){
+        localStorage.setItem("lvonescore", score);
+        localStorage.setItem("lvonedone", 'true');
+      }else if($('#level').attr('name') == 'kitchenone'){
+        localStorage.setItem("konescore", score);
+        localStorage.setItem("konedone", 'true');
+      }else if($('#level').attr('name') == 'garageone'){
+        localStorage.setItem("gonescore", score);
+        localStorage.setItem("gonedone", 'true');
+      }else if($('#level').attr('name') == 'livingdraggable'){
+        localStorage.setItem('lvtwoscore', score);
+        localStorage.setItem("lvtwodone", 'true');
+      }else if($('#level').attr('name') == 'kitchendraggable'){
+        localStorage.setItem('ktwoscore', score);
+        localStorage.setItem("ktwodone", 'true');
+      }else if($('#level').attr('name') == 'garagedraggable'){
+        localStorage.setItem('gtwoscore', score);
+        localStorage.setItem("gtwodone", 'true');
+      }
 
-}
+    }
     countdown( "timer", 3, 30 );
 
 
 });
 function decrementCnt(draggable){
   if(draggable){
-    score+=20;
+    score+=25;
   }else{
     score+=10;
   }
   hazardsFound--;
   $(".counter").html(hazardsFound);
-
 }
 
 
@@ -248,6 +329,7 @@ var getScore = function(){
   };
 
 var showPopover = function(id){
+  paused = true;
   var test = hashValue[id.toString()];
   if(test != undefined){
     $("#popover-text").html(hashValue[id.toString()]);
